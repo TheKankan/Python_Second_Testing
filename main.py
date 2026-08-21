@@ -10,14 +10,13 @@ from schemas import UserCreate, UserOut
 
 app = FastAPI(title="API Gestion Utilisateurs")
 
-# Type réutilisable pour l'injection de BDD
+# Type réutilisable pour l'injection en database (évite les warnings Ruff sur Depends)
 DBSession = Annotated[Session, Depends(get_db)]
 
 
-# --- ROUTE POST (Création) ---
 @app.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def create_user(user_in: UserCreate, db: DBSession):
-    # 1. Vérifier si l'email OU le nom d'utilisateur existe déjà
+    # Vérifier si l'email OU le nom d'utilisateur existe déjà
     stmt = select(User).where(
         or_(User.email == user_in.email, User.name == user_in.name)
     )
@@ -34,7 +33,7 @@ def create_user(user_in: UserCreate, db: DBSession):
             detail=detail_msg,
         )
 
-    # 2. Créer l'utilisateur (pense à hasher le MDP en vrai cas d'usage)
+    # TODO : Ajouter un vrai hashage de mot de passe
     new_user = User(
         name=user_in.name,
         email=user_in.email,
@@ -47,7 +46,6 @@ def create_user(user_in: UserCreate, db: DBSession):
     return new_user
 
 
-# --- ROUTE GET (Lecture par ID) ---
 @app.get("/users/{user_id}", response_model=UserOut)
 def get_user(user_id: int, db: DBSession):
     # Syntax SQLAlchemy 2.0 (select + db.scalar)
@@ -63,7 +61,6 @@ def get_user(user_id: int, db: DBSession):
     return user
 
 
-# --- ROUTE GET ALL (Liste filtrée / paginée) ---
 @app.get("/users", response_model=list[UserOut])
 def list_users(db: DBSession, skip: int = 0, limit: int = 10):
     stmt = select(User).offset(skip).limit(limit)
