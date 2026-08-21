@@ -68,3 +68,7 @@ def test_create_user_duplicate_username(client):
 
     assert response.status_code == 400
     assert response.json()["detail"] == "This username is already taken."
+
+
+    # TODO : add more tests (getting users, getting user by id, trying to register with invalid password or username, etc.)
+    # TODO : also add security for password & username (disable some special characters, etc.)
