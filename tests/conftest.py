@@ -8,7 +8,7 @@ from database import get_db
 from main import app
 from model import Base
 
-# Base SQLite en mémoire, dédiée exclusivement aux tests
+# SQLite database URL for testing (in-memory)
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 
 engine = create_engine(

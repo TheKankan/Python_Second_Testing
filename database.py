@@ -26,5 +26,5 @@ def get_db():
         db.close()
 
 
-# Type réutilisable pour FastAPI (évite les warnings Ruff sur Depends)
+# reusable type for FastAPI (avoids Ruff warnings on Depends)
 DBSession = Annotated[Session, Depends(get_db)]

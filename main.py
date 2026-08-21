@@ -11,13 +11,13 @@ from security import hash_password
 
 app = FastAPI(title="API Gestion Utilisateurs")
 
-# Type réutilisable pour l'injection en database (évite les warnings Ruff sur Depends)
+# reusable type for FastAPI (avoids Ruff warnings on Depends)
 DBSession = Annotated[Session, Depends(get_db)]
 
 
 @app.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def create_user(user_in: UserCreate, db: DBSession):
-    # Vérifier si l'email OU le nom d'utilisateur existe déjà
+    # Check if neither the username or email is already taken
     stmt = select(User).where(
         or_(User.email == user_in.email, User.name == user_in.name)
     )
@@ -25,16 +25,16 @@ def create_user(user_in: UserCreate, db: DBSession):
 
     if existing_user:
         if existing_user.email == user_in.email:
-            detail_msg = "Un utilisateur avec cet email existe déjà."
+            detail_msg = "This email is already registered."
         else:
-            detail_msg = "Ce nom d'utilisateur est déjà pris."
+            detail_msg = "This username is already taken."
 
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=detail_msg,
         )
 
-    # hacher le mdp avant de le stocker
+    # hash password before storing it in the database
     hashed_pwd = hash_password(user_in.password)
 
     new_user = User(

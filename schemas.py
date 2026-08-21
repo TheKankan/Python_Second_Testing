@@ -3,14 +3,14 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
-# Ce que le client envoie pour créer un utilisateur
+# what the api receives from the client
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
 
 
-# Ce que l'API renvoie en réponse (sans le mot de passe !)
+# what the api returns to the client (without the password for security reasons)
 class UserOut(BaseModel):
     id: int
     name: str
