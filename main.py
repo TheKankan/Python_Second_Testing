@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from model import User
 from schemas import UserCreate, UserOut
+from security import hash_password
 
 app = FastAPI(title="API Gestion Utilisateurs")
 
@@ -33,11 +34,13 @@ def create_user(user_in: UserCreate, db: DBSession):
             detail=detail_msg,
         )
 
-    # TODO : Ajouter un vrai hashage de mot de passe
+    # hacher le mdp avant de le stocker
+    hashed_pwd = hash_password(user_in.password)
+
     new_user = User(
         name=user_in.name,
         email=user_in.email,
-        hashed_password=f"hash_{user_in.password}",
+        hashed_password=hashed_pwd,
     )
 
     db.add(new_user)
