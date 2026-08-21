@@ -1,0 +1,1 @@
+Learning project to make a python database with Flask, FastAPI, Alembic and Pytest
